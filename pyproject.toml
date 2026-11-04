@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ctmc-pbee"
+version = "0.1.0"
+description = "CTMC-based Performance-Based Earthquake Engineering: reliability and resilience"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [{ name = "Chiara Nardin", email = "cnardin@ethz.ch" }]
+dependencies = ["numpy", "scipy", "pandas", "matplotlib", "tqdm"]
+
+[project.optional-dependencies]
+notebooks = ["jupyterlab", "ipykernel", "nbconvert"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

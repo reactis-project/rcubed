@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+title: "ctmc-pbee: CTMC-based Performance-Based Earthquake Engineering"
+message: "If you use this software, please cite the article below."
+type: software
+license: MIT
+authors:
+  - given-names: Chiara
+    family-names: Nardin
+    email: cnardin@ethz.ch
+    affiliation: ETH Zurich
+    orcid: "https://orcid.org/0000-0001-5860-0314"
+repository-code: "https://github.com/reactis-project/rcubed"
+version: 0.1.0
+# doi: TODO (Zenodo, after the first release)
+preferred-citation:
+  type: article
+  title: "A Generalized Framework for Performance-Based Earthquake Engineering: Integrated Assessment of Structural Reliability and Resilience"
+  authors:
+    - given-names: Chiara
+      family-names: Nardin
+    - given-names: Stefano
+      family-names: Marelli
+    - given-names: Bruno
+      family-names: Sudret
+    - given-names: Marco
+      family-names: Broccardo
+  journal: "Structural Safety"   # under review (STRUCS-S-26-00168); TODO: year, volume, DOI
+  year: 2026

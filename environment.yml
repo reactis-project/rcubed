@@ -1,0 +1,10 @@
+# Versions of the environment used to produce the paper results (conda env "msca").
+name: ctmc-pbee
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - pip
+  - pip:
+      - -r requirements.txt
+      - -e .
