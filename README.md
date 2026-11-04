@@ -23,12 +23,34 @@ src/ctmc_pbee/     Python package
     plotting.py      figures
     utils.py         helpers (tables, figure saving, comparisons)
     paths.py         repository folders (data/, output/, figures/)
-data/              Inputs: ESHM20 hazard curves, fragility parameters (JSON), recovery rates,
-                   and the assembled case-study input (pkl) rebuilt by notebooks/00_build_inputs
+data/              Public inputs: ESHM20 hazard curves, recovery rates
+                   (case-study fragility data: available upon request, see below)
 examples/          Guided examples (start here: 01_quickstart.ipynb)
 notebooks/         Notebooks that reproduce the figures and tables of the paper
 figures/           Benchmark figures (prefix B-) as published, used to check reproducibility
 ```
+
+## Data availability
+
+The case-study data (fragility parameters of the two structures and the assembled
+hazard–fragility input) are confidential and are **not included** in this repository.
+They are available from the corresponding author upon reasonable request
+(Chiara Nardin, cnardin@ethz.ch). The same holds for the benchmark figures of the case
+study, which display these data.
+
+What runs without the confidential data:
+
+| Content | Runs with the public repository |
+|---|---|
+| `notebooks/01_toy_example.ipynb` (Sec. 3, Figs. 3–7) + benchmark check | yes |
+| `examples/01_quickstart.ipynb`, CTMC basics | yes |
+| `examples/01_quickstart.ipynb`, case-study part (Table 5) | data on request |
+| `notebooks/00_build_inputs.ipynb`, `notebooks/02_case_study.ipynb` | data on request |
+
+Once received, place the files in `data/` with their original names:
+`fixed-transition_params.json`, `isolated-transition_params.json`,
+`SS-input-hazard-fragilities-20260512.pkl` (the case-study benchmark figures go in
+`figures/case_study/` and `figures/inputs/`).
 
 ## Installation
 
@@ -56,20 +78,24 @@ pip install -e .                  # the ctmc_pbee package (editable)
 
 Open `examples/01_quickstart.ipynb` (kernel: the `ctmc-pbee` environment) for a 15-minute
 guided tour: build the CTMC of a structure, compute reliability (β) and resilience (ρ),
-see the effect of the repair time, and run the case study of the paper.
+see the effect of the repair time, and run the case study of the paper (the last part
+needs the case-study data, see *Data availability*).
 
 ## Reproducing the paper
 
 | Paper item | Notebook | Benchmark figure(s) |
 |---|---|---|
 | Sec. 3, Figs. 3–7 (toy example) | `notebooks/01_toy_example.ipynb` | `figures/toy_example/B-*.svg` |
-| Case-study inputs: hazard + state-dependent fragilities (optional, the result is already in `data/`) | `notebooks/00_build_inputs.ipynb` | `figures/inputs/B-*.svg` |
+| Case-study inputs: hazard + state-dependent fragilities (data on request) | `notebooks/00_build_inputs.ipynb` | `figures/inputs/B-*.svg` |
 | Fig. 9 (state-dependent fragilities) | `notebooks/02_case_study.ipynb` | `B-03-BF-vs-ISO-median_comparison.svg` |
 | Fig. 10, Table 4 (state probabilities) | `notebooks/02_case_study.ipynb` | `B-03m-state-probabilities-*.svg` |
 | Fig. 11 (F and β vs μ10) | `notebooks/02_case_study.ipynb` | `B-IC-ftau-beta-function-mu10.svg`, `B-mIC-…` |
 | Table 5 (resilience metrics) | `notebooks/02_case_study.ipynb` | – |
 | Fig. 12 (Q0 and ρ vs μ10) | `notebooks/02_case_study.ipynb` | `B-fig_Q0_rho_aggregate.svg`, `B-mfig_…` |
 | Fig. 13 ((β, ρ) plane) | `notebooks/02_case_study.ipynb` | `B-06-beta-vs-rho-parametric.svg` |
+
+Rows from Fig. 9 onward require the case-study data (see *Data availability*);
+the case-study benchmark figures are not included in the public repository.
 
 TODO: confirm the mapping for Figs. 11–13.
 
