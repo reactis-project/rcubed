@@ -24,7 +24,7 @@ FIGURES = ROOT / "figures"    # benchmark figures (prefix B-) as published
 
 
 # Case-study files that are confidential and not distributed with the repository
-# (available upon request, see README, "Data availability").
+# (available upon request, see notebooks/02_case_study.ipynb).
 CONFIDENTIAL_DATA = (
     "fixed-transition_params.json",
     "isolated-transition_params.json",
@@ -51,8 +51,8 @@ def require_data(*names: str) -> None:
         msg += [
             "",
             "The case-study data are confidential and are not included in the public",
-            "repository. They are available from the corresponding author upon request",
-            "(see README.md, 'Data availability'). Once received, copy the files into",
+            "repository. They are available upon request, for the reproduction of the",
+            "figures only (Chiara Nardin, cnardin@ethz.ch). Once received, copy the files into",
             f"{DATA} with their original names and run this notebook again.",
             "The toy example (notebooks/01_toy_example.ipynb) runs without them.",
         ]

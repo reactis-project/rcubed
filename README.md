@@ -5,117 +5,46 @@
 
 # ctmc-pbee
 
-Continuous-time Markov chain (CTMC) framework for Performance-Based Earthquake
-Engineering: integrated assessment of structural **reliability** and **resilience**.
-
-This repository contains the code and data needed to reproduce the results of:
-
-> C. Nardin, S. Marelli, B. Sudret, M. Broccardo.
-> *A Generalized Framework for Performance-Based Earthquake Engineering:
-> Integrated Assessment of Structural Reliability and Resilience.*
-> Structural Safety (under review, STRUCS-S-26-00168).
-
-> **Status:** work in progress (see `TODO.md`). All notebooks run end-to-end; 17 of the
-> 18 benchmark figures are reproduced exactly.
-
-## Repository structure
-
-```
-src/ctmc_pbee/     Python package
-    core.py          CTMC model: generator Q, π(t) (Eq. 8–9, 28–29) and parametric studies
-    metrics.py       reliability (F, β) and resilience (Q0, R0, ρ) metrics, Eq. 10–19
-    spectral.py      spectral analysis and approximation of R0, Eq. 20–27
-    generator.py     generator matrices Q from hazard, fragilities and recovery times (case study)
-    fragilities.py   simulated state-dependent fragility curves (case study)
-    plotting.py      figures
-    utils.py         helpers (tables, figure saving, comparisons)
-    paths.py         repository folders (data/, output/, figures/)
-data/              Public inputs: ESHM20 hazard curves, recovery rates
-                   (case-study fragility data: available upon request, see below)
-examples/          Guided examples (start here: 01_quickstart.ipynb)
-notebooks/         Notebooks that reproduce the figures and tables of the paper
-figures/           Benchmark figures (prefix B-) as published, used to check reproducibility
-```
-
-## Data availability
-
-The case-study data (fragility parameters of the two structures and the assembled
-hazard–fragility input) are confidential and are **not included** in this repository.
-They are available from the corresponding author upon reasonable request
-(Chiara Nardin, cnardin@ethz.ch). The same holds for the benchmark figures of the case
-study, which display these data.
-
-What runs without the confidential data:
-
-| Content | Runs with the public repository |
-|---|---|
-| `notebooks/01_toy_example.ipynb` (Sec. 3, Figs. 3–7) + benchmark check | yes |
-| `examples/01_quickstart.ipynb`, CTMC basics | yes |
-| `examples/01_quickstart.ipynb`, case-study part (Table 5) | data on request |
-| `notebooks/00_build_inputs.ipynb`, `notebooks/02_case_study.ipynb` | data on request |
-
-Once received, place the files in `data/` with their original names:
-`fixed-transition_params.json`, `isolated-transition_params.json`,
-`SS-input-hazard-fragilities-20260512.pkl` (the case-study benchmark figures go in
-`figures/case_study/` and `figures/inputs/`).
+Performance-Based Earthquake Engineering (PBEE) is generalized by describing the damage state of a
+structure with a continuous-time Markov chain (CTMC): damage, recovery, and repeated earthquakes over time.
+A single model gives both **reliability** (β) and **resilience** (ρ).
 
 ## Installation
 
 ```bash
 conda env create -f environment.yml
 conda activate ctmc-pbee
-```
-
-This installs the exact package versions used for the paper and the `ctmc_pbee`
-package itself in editable mode. Then register the environment as a Jupyter kernel
-(the notebooks expect a kernel named `ctmc-pbee`):
-
-```bash
 python -m ipykernel install --user --name ctmc-pbee --display-name "Python (ctmc-pbee)"
 ```
 
-Alternatively, with pip only (Python 3.13), from the repository root:
-
-```bash
-pip install -r requirements.txt   # pinned versions used for the paper
-pip install -e .                  # the ctmc_pbee package (editable)
-```
+Alternatively, with pip only (Python 3.13): `pip install -r requirements.txt` and then `pip install -e .`
 
 ## Getting started
 
-Open `examples/01_quickstart.ipynb` (kernel: the `ctmc-pbee` environment) for a 15-minute
-guided tour: build the CTMC of a structure, compute reliability (β) and resilience (ρ),
-see the effect of the repair time, and run the case study of the paper (the last part
-needs the case-study data, see *Data availability*).
+Open `examples/01_quickstart.ipynb` with the kernel *Python (ctmc-pbee)*. It is a short guided tour:
+build the CTMC of a structure, then compute reliability and resilience, and see the effect of the repair time.
 
-## Reproducing the paper
+## Repository structure
 
-| Paper item | Notebook | Benchmark figure(s) |
-|---|---|---|
-| Sec. 3, Figs. 3–7 (toy example) | `notebooks/01_toy_example.ipynb` | `figures/toy_example/B-*.svg` |
-| Case-study inputs: hazard + state-dependent fragilities (data on request) | `notebooks/00_build_inputs.ipynb` | `figures/inputs/B-*.svg` |
-| Fig. 9 (state-dependent fragilities) | `notebooks/02_case_study.ipynb` | `B-03-BF-vs-ISO-median_comparison.svg` |
-| Fig. 10, Table 4 (state probabilities) | `notebooks/02_case_study.ipynb` | `B-03m-state-probabilities-*.svg` |
-| Fig. 11 (F and β vs μ10) | `notebooks/02_case_study.ipynb` | `B-IC-ftau-beta-function-mu10.svg`, `B-mIC-…` |
-| Table 5 (resilience metrics) | `notebooks/02_case_study.ipynb` | – |
-| Fig. 12 (Q0 and ρ vs μ10) | `notebooks/02_case_study.ipynb` | `B-fig_Q0_rho_aggregate.svg`, `B-mfig_…` |
-| Fig. 13 ((β, ρ) plane) | `notebooks/02_case_study.ipynb` | `B-06-beta-vs-rho-parametric.svg` |
-
-Rows from Fig. 9 onward require the case-study data (see *Data availability*);
-the case-study benchmark figures are not included in the public repository.
-
-TODO: confirm the mapping for Figs. 11–13.
-
-Figures regenerated by the notebooks are written to `output/<group>/` with the same
-names as the benchmarks (without `B-`). To check them against the published figures:
-
-```bash
-python tests/compare_figures.py
 ```
+notebooks/   reproduction of the paper figures
+               01_toy_example.ipynb   Section 3 (Figs. 3–7)
+               02_case_study.ipynb    Section 4 (Figs. 9–13, Tables 4–5)
+examples/    quick guide (01_quickstart.ipynb)
+src/         ctmc_pbee, the core of the package
+data/        input data
+figures/     published figures, used as benchmarks (python tests/compare_figures.py)
+```
+
+A short user manual, with detailed help on the functions, will follow.
 
 ## How to cite
 
-See `CITATION.cff`. A Zenodo DOI will be added with the first release.
+> C. Nardin, S. Marelli, B. Sudret, M. Broccardo.
+> *A Generalized Framework for Performance-Based Earthquake Engineering: Integrated Assessment of
+> Structural Reliability and Resilience.* Structural Safety (under review).
+
+See also `CITATION.cff`.
 
 ## License
 
