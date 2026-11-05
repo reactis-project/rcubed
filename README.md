@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="docs/rcubed3-logo.png" width="300"
+       alt="rcubed: reliability, resilience, recovery">
+</p>
+
 # ctmc-pbee
 
 Continuous-time Markov chain (CTMC) framework for Performance-Based Earthquake
