@@ -29,3 +29,6 @@ data/fixed-transition_params.json
 data/isolated-transition_params.json
 figures/case_study/
 figures/inputs/
+
+# Input-building notebook (not public: the pkl in data/ is enough)
+notebooks/00_build_inputs.ipynb
