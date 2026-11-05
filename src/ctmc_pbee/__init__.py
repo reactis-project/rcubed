@@ -10,7 +10,6 @@ core        : CTMC model (generator Q, pi(t), Eq. 8-9, 28-29) and parametric stu
 metrics     : reliability (F, beta) and resilience (Q0, R0, rho) metrics, Eq. 10-19
 spectral    : spectral analysis and approximation of R0, Eq. 20-27
 generator   : generator matrices Q from hazard, fragilities and recovery (case study)
-fragilities : simulated state-dependent fragility curves (case study)
 case_study  : case study of the paper (Sec. 4): inputs, Figs. 9-13, Tables 4-5
 montecarlo  : Monte Carlo simulation of the CTMC trajectories (check of F and R0)
 plotting    : figures
