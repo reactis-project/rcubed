@@ -43,7 +43,7 @@ A short user manual, with detailed help on the functions, will follow.
 
 > C. Nardin, S. Marelli, B. Sudret, M. Broccardo.
 > *A Generalized Framework for Performance-Based Earthquake Engineering: Integrated Assessment of
-> Structural Reliability and Resilience.* Structural Safety (under review).
+> Structural Reliability and Resilience.* Structural Safety (accepted for publication).
 
 See also `CITATION.cff`.
 

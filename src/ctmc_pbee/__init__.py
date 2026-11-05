@@ -2,7 +2,7 @@
 
 Code accompanying Nardin, Marelli, Sudret, Broccardo, "A Generalized Framework
 for Performance-Based Earthquake Engineering: Integrated Assessment of
-Structural Reliability and Resilience" (STRUCS-S-26-00168).
+Structural Reliability and Resilience", Structural Safety (accepted for publication).
 
 Modules
 -------
