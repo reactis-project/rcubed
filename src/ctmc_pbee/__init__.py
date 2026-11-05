@@ -12,6 +12,7 @@ spectral    : spectral analysis and approximation of R0, Eq. 20-27
 generator   : generator matrices Q from hazard, fragilities and recovery (case study)
 fragilities : simulated state-dependent fragility curves (case study)
 case_study  : case study of the paper (Sec. 4): inputs, Figs. 9-13, Tables 4-5
+montecarlo  : Monte Carlo simulation of the CTMC trajectories (check of F and R0)
 plotting    : figures
 utils       : helpers (tables, figure saving, nested dicts, comparisons)
 paths       : repository folders (data/, output/)

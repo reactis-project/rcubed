@@ -8,7 +8,7 @@ Reference
 Nardin, Marelli, Sudret, Broccardo.
 "A Generalized Framework for Performance-Based Earthquake Engineering:
 Integrated Assessment of Structural Reliability and Resilience."
-Structural Safety (under review, STRUCS-S-26-00168).
+Structural Safety (accepted for publication).
 
 Equation index (numbering of the paper)
 ---------------------------------------
@@ -20,6 +20,12 @@ Eq. (15)       -> M0_kernel              : matrix-valued kernel  M0(t)
 Eq. (17)       -> R0_complement_exact    : Q0(t) = 1 - R0(t), conditional occupation fraction of ds0
 Eq. (18)       -> R0_exact               : resilience metric  R0(t)  (exact)
 Eq. (19)       -> rho_index              : resilience index  rho
+
+Unconditional formulation of the REC2026 conference paper (Section 3 below; superseded by
+the conditional one above, kept to reproduce that paper):
+occ_time_truncated     : expected time in each transient state up to t, truncated fundamental matrix
+R0_unconditional       : R0 = n00(t) / t, unconditional fraction of time in ds0
+rho_unconditional      : rho = -Phi^{-1}(1 - R0)
 
 All functions take the transient sub-generator Q_T (see core.extract_Q_T).
 
@@ -259,3 +265,71 @@ def rho_index(R0: float) -> float:
     eps = 1e-12
     R0  = float(np.clip(R0, eps, 1.0 - eps))
     return float(-norm.ppf(R0))
+
+
+# ---------------------------------------------------------------------------
+# 3.  Unconditional formulation  –  REC2026 conference paper
+# ---------------------------------------------------------------------------
+# Earlier, unconditional definition of the resilience metric, used in
+#   Nardin et al., REC2026 conference paper (toy example, Figs. 2-5).
+# The time spent in ds0 is averaged over all trajectories, including those that
+# collapse before t (after collapse the structure is no longer in ds0).
+# The Structural Safety paper replaces it with the conditional metric of
+# Section 2 (fraction of time in ds0 given survival, Eq. 17-19).
+
+def occ_time_truncated(Q_T: np.ndarray, t: float,
+                       pi0_T: np.ndarray | None = None) -> np.ndarray:
+    """
+    Expected time spent in each transient state up to t (truncated fundamental matrix).
+
+        N(t)   = int_0^t exp(Q_T s) ds = (-Q_T)^{-1} (I - exp(Q_T t))
+        n_j(t) = pi_T(0) N(t) e_j
+
+    Parameters
+    ----------
+    Q_T   : (C, C) transient sub-generator
+    t     : time horizon [year]
+    pi0_T : initial transient distribution; default e_0
+
+    Returns
+    -------
+    n : (C,) ndarray  expected occupation times [year]  (n[0] = n00(t) for pi0_T = e_0)
+    """
+    C = Q_T.shape[0]
+    if pi0_T is None:
+        pi0_T = np.zeros(C)
+        pi0_T[0] = 1.0
+    N_t = np.linalg.solve(-Q_T, np.eye(C) - expm(Q_T * t))
+    return pi0_T @ N_t
+
+
+def R0_unconditional(Q_T: np.ndarray, t: float,
+                     pi0_T: np.ndarray | None = None) -> float:
+    """
+    Unconditional resilience metric of the REC2026 paper.
+
+        R0(t) = n00(t) / t
+
+    Expected fraction of [0, t] spent in the undamaged state ds0 (1 = always undamaged).
+
+    Returns
+    -------
+    R0 : float in [0, 1]
+    """
+    n = occ_time_truncated(Q_T, t, pi0_T)
+    return float(np.clip(n[0] / t, 0.0, 1.0))
+
+
+def rho_unconditional(R0: float) -> float:
+    """
+    Resilience index of the REC2026 paper.
+
+        rho = -Phi^{-1}(1 - R0)
+
+    Parameters
+    ----------
+    R0 : unconditional resilience metric (R0_unconditional), in (0, 1)
+    """
+    eps = 1e-12
+    R0  = float(np.clip(R0, eps, 1.0 - eps))
+    return float(-norm.ppf(1.0 - R0))

@@ -30,6 +30,7 @@ build the CTMC of a structure, then compute reliability and resilience, and see 
 notebooks/   reproduction of the paper figures
                01_toy_example.ipynb   Section 3 (Figs. 3–7)
                02_case_study.ipynb    Section 4 (Figs. 9–13, Tables 4–5)
+               03_rec2026.ipynb       REC2026 conference paper (Figs. 2–5), with Monte Carlo check
 examples/    quick guide (01_quickstart.ipynb)
 src/         ctmc_pbee, the core of the package
 data/        input data
