@@ -279,67 +279,59 @@ def fig12_Q0_rho(Qsim, hqtile='lambda_0.05', stqtile='p84', savefig=True):
 # ─────────────────────────────────────────────────────────────────────────────
 # Figure 13: (beta, rho) plane
 # ─────────────────────────────────────────────────────────────────────────────
-def fig13_beta_rho_plane(Qsim, results, hqtile='lambda_0.05', stqtile='p50',
-                         T_hor=50.0, N_mu=80, n_quad=300, savefig=True):
-    """Figure 13: parametric curves (beta(mu10), rho(mu10)) of the two structures.
+# Recovery scenarios of Table 3: median repair time [days]
+FIG13_REPAIR_DAYS = {
+    'fixed':    {'short': 30, 'long': (120, 365)},
+    'isolated': {'short': 1,  'long': (30, 50)},
+}
 
-    ``results`` is the output of :func:`table5` (reference points at ``T_hor``).
+
+def fig13_beta_rho_plane(Qsim, results=None, hqtile='lambda_0.05', stqtile='p50',
+                         T_hor=50.0, n_quad=300, savefig=True):
+    """Figure 13: (beta, rho) points of the two structures for the recovery scenarios
+    of Table 3 (square: short repair; triangles + band: range of the long repair).
+
+    ``results`` (output of :func:`table5`) is no longer needed; kept for compatibility.
     """
     rc = {"font.size": 13, "axes.titlesize": 12, "axes.labelsize": 13,
           "xtick.labelsize": 11, "ytick.labelsize": 11, "mathtext.fontset": "stix"}
+    mu_of = lambda days: np.log(2) / (np.asarray(days, float) / 365.0)   # Eq. 30
     with plt.rc_context(rc):
-        mus_sweep = np.logspace(-1, 3, N_mu)
-        Q_bf = Qsim['ita'][hqtile]['fixed'][stqtile]['high'].copy()
-        Q_bi = Qsim['ita'][hqtile]['isolated'][stqtile]['high'].copy()
-        betas_bf, rhos_bf = core.beta_rho_vs_mu10(Q_bf, mus_sweep, T_hor, n_quad)
-        betas_bi, rhos_bi = core.beta_rho_vs_mu10(Q_bi, mus_sweep, T_hor, n_quad)
-
-        col_bf, col_bi = STRUCT_COLORS['fixed']['color'], STRUCT_COLORS['isolated']['color']
         fig, ax = plt.subplots(figsize=(7, 6.5))
-        fig.subplots_adjust(right=0.74)
-
-        ax.plot(betas_bf, rhos_bf, color=col_bf, lw=2.0, alpha=0.9, zorder=3,
-                label='Braced Frame (BF)')
-        ax.plot(betas_bi, rhos_bi, color=col_bi, lw=2.0, alpha=0.9, zorder=3,
-                ls='--', label='Base Isolated (BI)')
-
-        # start (triangle: low mu10) / end (square: high mu10) of the sweep
-        for bv, rv, col in [(betas_bf, rhos_bf, col_bf), (betas_bi, rhos_bi, col_bi)]:
-            ax.scatter(bv[0],  rv[0],  s=180, marker='^', color=col,
-                       edgecolor='white', linewidth=0.8, zorder=7)
-            ax.scatter(bv[-1], rv[-1], s=180, marker='s', color=col,
-                       edgecolor='white', linewidth=0.8, zorder=7)
-
-        # reference points (short / long recovery of Table 5)
-        for sc_label, mk in {'short': 's', 'long': '^'}.items():
-            for st, col, offset in [('fixed', col_bf, (+6, -14)), ('isolated', col_bi, (+6, +6))]:
-                r = results[st][(sc_label, T_hor)]
-                b, rho, mu = r['beta'], r['rho'], r['mu10']
-                ax.scatter(b, rho, s=140, marker=mk, color=col,
-                           edgecolor='white', linewidth=1.0, zorder=9)
-                ax.annotate(f'{sc_label}\nμ={mu:.1f} yr⁻¹', (b, rho), textcoords='offset points',
-                            xytext=offset, fontsize=7, color=col, ha='left')
+        # performance quadrants (as in Figure 7)
+        ax.axvspan(0, 2, ymax=2 / 4.5, color='#f2dcdc', alpha=0.6, zorder=0)
+        ax.axvspan(2, 4, ymin=2 / 4.5, color='#e6e6e6', alpha=0.6, zorder=0)
+        for st in ['fixed', 'isolated']:
+            col = STRUCT_COLORS[st]['color']
+            Q_b = Qsim['ita'][hqtile][st][stqtile]['high'].copy()
+            # long-term recovery: range of median repair times (band + triangles at the ends)
+            d_long = np.linspace(*FIG13_REPAIR_DAYS[st]['long'], 30)
+            b_l, r_l = core.beta_rho_vs_mu10(Q_b, mu_of(d_long), T_hor, n_quad)
+            ax.plot(b_l, r_l, color=col, lw=7, alpha=0.35, solid_capstyle='round', zorder=3)
+            ax.scatter(b_l[[0, -1]], r_l[[0, -1]], s=150, marker='^', facecolor='white',
+                       edgecolor=col, linewidth=1.6, zorder=8)
+            # short-term recovery: one point (square)
+            b_s, r_s = core.beta_rho_vs_mu10(Q_b, mu_of([FIG13_REPAIR_DAYS[st]['short']]),
+                                             T_hor, n_quad)
+            ax.scatter(b_s, r_s, s=150, marker='s', facecolor='white',
+                       edgecolor=col, linewidth=1.6, zorder=8)
 
         ax.set_xlim(0, 4)
-        ax.set_ylim(0, 4)
+        ax.set_ylim(0, 4.5)
+        ax.axvline(2, color='gray', lw=0.6)
+        ax.axhline(2, color='gray', lw=0.6)
         ax.set_xlabel(r'Reliability index $\beta_{50\mathrm{yr}}$')
         ax.set_ylabel(r'Resilience index $\rho_{50\mathrm{yr}}$')
-        ax.set_title(
-            r'$(\beta,\,\rho)$ plane — varying $\mu_{10}$' '\n'
-            fr'$T_{{\mathrm{{hor}}}}={T_hor:.0f}$ yr  |  '
-            r'$\blacktriangle$ = low $\mu_{10}$,  $\blacksquare$ = high $\mu_{10}$',
-            fontsize=10,
-        )
+        ax.set_title(r'$\beta_{50y}$-$\rho$ performance space', fontsize=12)
         ax.grid(True, ls='--', alpha=0.3)
+        cbf, cbi = STRUCT_COLORS['fixed']['color'], STRUCT_COLORS['isolated']['color']
         leg = [
-            Line2D([], [], color=col_bf, lw=2, label='Braced Frame (BF)'),
-            Line2D([], [], color=col_bi, lw=2, ls='--', label='Base Isolated (BI)'),
-            Line2D([], [], marker='^', color='gray', ms=8, lw=0,
-                   markeredgecolor='white', label=r'low $\mu_{10}$'),
-            Line2D([], [], marker='s', color='gray', ms=8, lw=0,
-                   markeredgecolor='white', label=r'high $\mu_{10}$'),
+            Line2D([], [], marker='s', color=cbi, mfc='white', lw=0, ms=9, label=r'BI, $t_{med}$ = 1 day'),
+            Line2D([], [], marker='^', color=cbi, mfc='white', lw=0, ms=9, label=r'BI, $t_{med}$ = 30-50 days'),
+            Line2D([], [], marker='s', color=cbf, mfc='white', lw=0, ms=9, label=r'BF, $t_{med}$ = 30 days'),
+            Line2D([], [], marker='^', color=cbf, mfc='white', lw=0, ms=9, label=r'BF, $t_{med}$ = 120-365 days')
         ]
-        ax.legend(handles=leg, fontsize=8, loc='lower right', framealpha=0.85)
+        ax.legend(handles=leg, fontsize=9, loc='upper left', bbox_to_anchor=(1.02, 1), framealpha=0.9)
         plt.tight_layout()
         _save('06-beta-vs-rho-parametric.svg', fig, savefig)
         plt.show()
