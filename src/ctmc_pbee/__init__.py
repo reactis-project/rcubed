@@ -14,7 +14,7 @@ fragilities : simulated state-dependent fragility curves (case study)
 case_study  : case study of the paper (Sec. 4): inputs, Figs. 9-13, Tables 4-5
 plotting    : figures
 utils       : helpers (tables, figure saving, nested dicts, comparisons)
-paths       : repository folders (data/, output/, figures/)
+paths       : repository folders (data/, output/)
 """
 
 __version__ = "0.1.0"

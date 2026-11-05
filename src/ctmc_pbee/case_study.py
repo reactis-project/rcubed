@@ -17,8 +17,7 @@ Typical use (see ``notebooks/02_case_study.ipynb``)::
 The state-dependent fragilities stored in the pkl file were derived as in
 Nardin et al. (2025), https://www.sciencedirect.com/science/article/pii/S0951832025002686.
 
-Figures are saved as SVG in ``output/case_study/`` with the names of the benchmark
-figures in ``figures/case_study/`` (without the ``B-`` prefix).
+Figures are saved as SVG in ``output/case_study/``.
 """
 
 import json
