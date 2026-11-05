@@ -6,7 +6,9 @@ Structural Reliability and Resilience" (STRUCS-S-26-00168).
 
 Modules
 -------
-core        : reliability (F, beta) and resilience (R0, rho) of the CTMC, Eq. 8-27
+core        : CTMC model (generator Q, pi(t), Eq. 8-9, 28-29) and parametric studies
+metrics     : reliability (F, beta) and resilience (Q0, R0, rho) metrics, Eq. 10-19
+spectral    : spectral analysis and approximation of R0, Eq. 20-27
 generator   : generator matrices Q from hazard, fragilities and recovery (case study)
 fragilities : simulated state-dependent fragility curves (case study)
 plotting    : figures

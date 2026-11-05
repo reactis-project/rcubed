@@ -22,7 +22,9 @@ This repository contains the code and data needed to reproduce the results of:
 
 ```
 src/ctmc_pbee/     Python package
-    core.py          reliability (F, β) and resilience (R0, ρ) of the CTMC, Eq. 8–27 of the paper
+    core.py          CTMC model: generator Q, π(t) (Eq. 8–9, 28–29) and parametric studies
+    metrics.py       reliability (F, β) and resilience (Q0, R0, ρ) metrics, Eq. 10–19
+    spectral.py      spectral analysis and approximation of R0, Eq. 20–27
     generator.py     generator matrices Q from hazard, fragilities and recovery times (case study)
     fragilities.py   simulated state-dependent fragility curves (case study)
     plotting.py      figures
