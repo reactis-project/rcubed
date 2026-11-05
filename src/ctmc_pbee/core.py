@@ -30,14 +30,19 @@ Eq. (24)       -> spectral_analysis q0   : QSD limit of the undamaged-state prob
 Eq. (25)       -> S_T_asymptotic         : asymptotic survival function
 Eq. (26)       -> R0_asymptotic_integrand: asymptotic result for 1 - R0(t)
 Eq. (27)       -> R0_spectral            : spectral approximation  R0 ~ 1 - w0 * q0
-Eq. (28)-(29)  -> build_Q                : dimensionless parameters and Q = mu10 * Q_tilde (Section 3)
+(Sec. 3)       -> build_Q                : generator Q from the physical rates lambda_01, lambda_02, lambda_12, mu10
+Eq. (28)-(29)  -> build_Q_adim           : dimensionless Q_tilde(alpha, gamma, epsilon), Q = mu10 * Q_tilde,
+                                           to be used with the dimensionless time t_tilde = mu10 * t
 
 Usage
 -----
     from ctmc_pbee import core as ct
     import numpy as np
 
-    Q = ct.build_Q(alpha=0.5, gamma=1e-3, epsilon=2.0, mu10=1.0)
+    Q = ct.build_Q(lam01=1/50, lam02=1/2475, lam12=1/100, mu10=8.4)   # rates [1/year]
+    # or, in the dimensionless form of the paper (Eq. 28-29): Q_tilde with time t_tilde = mu10 * t
+    Q_tilde = ct.build_Q_adim(alpha=0.5, gamma=1e-3, epsilon=2.0)
+    F, S = ct.F_tau(ct.extract_Q_T(Q_tilde), t=mu10 * 50.0)   # same F as with Q and t = 50 yr
     Q_T = ct.extract_Q_T(Q)
 
     F, S   = ct.F_tau(Q_T, t=50.0)
@@ -58,30 +63,27 @@ from scipy.stats  import norm
 # 1.  Generator construction  (Eq. 28-29, Section 3)
 # ---------------------------------------------------------------------------
 
-def build_Q(alpha: float, gamma: float, epsilon: float,
-            mu10: float = 1.0) -> np.ndarray:
+def build_Q(lam01: float, lam02: float, lam12: float, mu10: float) -> np.ndarray:
     """
-    Build the full 3×3 generator matrix for the three-state CTMC.
-
-    Factorisation (Eq. 29):
-        Q = mu10 * Q_tilde(alpha, gamma, epsilon)
+    Build the full 3×3 generator matrix of the three-state CTMC from the
+    physical transition rates (Section 3).
 
     Parameters
     ----------
-    alpha   : lambda_01 / mu10   (damage-to-recovery ratio)
-    gamma   : lambda_02 / mu10   (collapse-to-recovery ratio)
-    epsilon : lambda_12 / lambda_01  (damage-escalation ratio)
-    mu10    : recovery rate [year^{-1}], default 1.0
+    lam01 : rate ds0 -> ds1, damaging earthquakes [year^{-1}]
+    lam02 : rate ds0 -> ds2, direct collapse      [year^{-1}]
+    lam12 : rate ds1 -> ds2, collapse of the damaged structure [year^{-1}]
+    mu10  : rate ds1 -> ds0, recovery (repair)    [year^{-1}]
 
     Returns
     -------
     Q : (3, 3) ndarray  [year^{-1}]
-        Full generator.  Rows sum to zero; state 2 is absorbing.
-    """
-    lam01 = alpha   * mu10
-    lam02 = gamma   * mu10
-    lam12 = epsilon * lam01          # = epsilon * alpha * mu10
+        Full generator.  Rows sum to zero; state 2 (collapse) is absorbing.
 
+    See also
+    --------
+    build_Q_adim : the same matrix from the dimensionless parameters (Eq. 28-29).
+    """
     Q = np.array([
         [-(lam01 + lam02),  lam01,              lam02  ],
         [ mu10,            -(mu10 + lam12),      lam12  ],
@@ -89,6 +91,40 @@ def build_Q(alpha: float, gamma: float, epsilon: float,
     ])
     assert np.allclose(Q.sum(axis=1), 0.0), "Row-sum check failed."
     return Q
+
+
+def build_Q_adim(alpha: float, gamma: float, epsilon: float) -> np.ndarray:
+    """
+    Dimensionless generator Q_tilde(alpha, gamma, epsilon) of Eq. (29).
+
+    With the dimensionless parameters of Eq. (28)
+        alpha = lambda_01 / mu10,  gamma = lambda_02 / mu10,  epsilon = lambda_12 / lambda_01
+    the dimensional generator factors as  Q = mu10 * Q_tilde.  Q_tilde must be used
+    with the dimensionless time  t_tilde = mu10 * t  (Section 3): the Kolmogorov
+    equations become  d pi / d t_tilde = pi Q_tilde,  so the whole evolution depends only
+    on (alpha, gamma, epsilon).  Hence, for any time-dependent quantity,
+
+        F_tau(extract_Q_T(build_Q_adim(a, g, e)), mu10 * t)
+            == F_tau(extract_Q_T(build_Q(lam01, lam02, lam12, mu10)), t)
+
+    and the same holds for pi_t, R0_exact, pi_T_eigenmode, ...  Only when mu10 = 1
+    [year^-1] does t_tilde coincide numerically with t in years.
+
+    Parameters
+    ----------
+    alpha   : lambda_01 / mu10   (damage-to-recovery ratio)
+    gamma   : lambda_02 / mu10   (collapse-to-recovery ratio)
+    epsilon : lambda_12 / lambda_01  (damage-escalation ratio)
+
+    Returns
+    -------
+    Q_tilde : (3, 3) ndarray, dimensionless.  Rows sum to zero; state 2 is absorbing.
+
+    See also
+    --------
+    build_Q : dimensional generator from the physical rates [year^-1].
+    """
+    return build_Q(alpha, gamma, alpha * epsilon, 1.0)
 
 
 def extract_Q_T(Q: np.ndarray) -> np.ndarray:
@@ -740,9 +776,10 @@ def beta_from_dimensionless(alpha: float, gamma: float, epsilon: float,
     """
     Reliability index beta(T_hor) of the three-state model, from the
     dimensionless parameters of Eq. (28)-(29).  Toy example, Section 3.
+    Q_tilde is evaluated at the dimensionless time  t_tilde = mu10 * T_hor.
     """
-    Q_T = extract_Q_T(build_Q(alpha, gamma, epsilon, mu10))
-    F, _ = F_tau(Q_T, T_hor)
+    Q_T = extract_Q_T(build_Q_adim(alpha, gamma, epsilon))
+    F, _ = F_tau(Q_T, mu10 * T_hor)
     return beta_index(F)
 
 
@@ -765,7 +802,7 @@ def beta_rho_vs_mu10_from_rates(lam01: float, lam02: float, lam12: float, mu10_a
     """
     betas, rhos = [], []
     for m in mu10_arr:
-        Q_T = extract_Q_T(build_Q(lam01 / m, lam02 / m, lam12 / lam01, m))
+        Q_T = extract_Q_T(build_Q(lam01, lam02, lam12, m))
         F, _ = F_tau(Q_T, T_hor)
         betas.append(beta_index(F))
         rhos.append(rho_index(R0_exact(Q_T, T_hor, n_quad=n_quad)))
