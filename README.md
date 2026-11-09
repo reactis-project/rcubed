@@ -62,7 +62,8 @@ ESHM20 output datasets: https://doi.org/10.12686/ESHM20-OUTPUT
 
 > C. Nardin, S. Marelli, B. Sudret, M. Broccardo.
 > *A Generalized Framework for Performance-Based Earthquake Engineering: Integrated Assessment of
-> Structural Reliability and Resilience.* Structural Safety (accepted for publication).
+> Structural Reliability and Resilience.* Structural Safety, 102784, 2026.
+> https://doi.org/10.1016/j.strusafe.2026.102784
 
 See also `CITATION.cff`.
 

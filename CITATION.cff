@@ -24,5 +24,7 @@ preferred-citation:
       family-names: Sudret
     - given-names: Marco
       family-names: Broccardo
-  journal: "Structural Safety"   # accepted for publication; TODO: volume, DOI
+  journal: "Structural Safety"   # TODO: add volume once assigned
+  start: 102784
   year: 2026
+  doi: "10.1016/j.strusafe.2026.102784"
