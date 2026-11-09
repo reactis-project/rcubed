@@ -1,5 +1,5 @@
 """
-ctmc_pbee.metrics
+rcubed.metrics
 =================
 Reliability and resilience metrics of a CTMC with one absorbing (collapse) state.
 
@@ -31,7 +31,7 @@ All functions take the transient sub-generator Q_T (see core.extract_Q_T).
 
 Usage
 -----
-    from ctmc_pbee import core, metrics
+    from rcubed import core, metrics
 
     Q_T  = core.extract_Q_T(core.build_Q(lam01=1/50, lam02=1/2475, lam12=1/100, mu10=8.4))
     F, S = metrics.F_tau(Q_T, t=50.0)

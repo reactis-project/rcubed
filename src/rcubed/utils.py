@@ -1,5 +1,5 @@
 """
-ctmc_pbee.utils
+rcubed.utils
 ===============
 Small helpers: nested dicts, figure saving, printing of result tables, comparisons.
 """

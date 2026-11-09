@@ -1,5 +1,5 @@
 """
-ctmc_pbee.generator
+rcubed.generator
 ===================
 Generator matrices Q of the case-study CTMC from seismic hazard, state-dependent
 fragilities and recovery times (Section 4 of the paper).

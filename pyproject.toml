@@ -3,7 +3,7 @@ requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ctmc-pbee"
+name = "rcubed"
 version = "0.1.0"
 description = "CTMC-based Performance-Based Earthquake Engineering: reliability and resilience"
 readme = "README.md"

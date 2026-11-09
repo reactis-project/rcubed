@@ -1,12 +1,12 @@
 """
-ctmc_pbee.case_study
+rcubed.case_study
 ====================
 Case study of the paper (Section 4): input loading, generator matrices and the
 functions that reproduce Figures 9-13 and Tables 4-5.
 
 Typical use (see ``notebooks/02_case_study.ipynb``)::
 
-    from ctmc_pbee import case_study as cs
+    from rcubed import case_study as cs
 
     inputs = cs.load_inputs()          # hazard + state-dependent fragilities (pkl)
     Qsim   = cs.build_Q(inputs)        # generator matrices of the case study
@@ -31,8 +31,8 @@ from matplotlib.legend_handler import HandlerTuple
 from matplotlib.lines import Line2D
 from scipy.linalg import expm
 
-from ctmc_pbee import core, generator, metrics, plotting, utils
-from ctmc_pbee.paths import DATA, output_dir, require_data
+from rcubed import core, generator, metrics, plotting, utils
+from rcubed.paths import DATA, output_dir, require_data
 
 INPUT_PKL = "SS-input-hazard-fragilities-20260512.pkl"
 

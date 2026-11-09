@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "ctmc-pbee: CTMC-based Performance-Based Earthquake Engineering"
+title: "rcubed: CTMC-based Performance-Based Earthquake Engineering"
 message: "If you use this software, please cite the article below."
 type: software
 license: MIT

@@ -1,9 +1,9 @@
 """
-ctmc_pbee.core
+rcubed.core
 ==============
 Three-state CTMC model with one absorbing (collapse) state: generator matrix,
 state probabilities, and the parametric studies of the paper built on the
-metrics (ctmc_pbee.metrics) and on the spectral analysis (ctmc_pbee.spectral).
+metrics (rcubed.metrics) and on the spectral analysis (rcubed.spectral).
 
 Reference
 ---------
@@ -29,7 +29,7 @@ Eq. (28)-(29)  -> build_Q_adim           : dimensionless Q_tilde(alpha, gamma, e
 Usage
 -----
     import numpy as np
-    from ctmc_pbee import core, metrics, spectral
+    from rcubed import core, metrics, spectral
 
     mu10 = 8.4
     Q   = core.build_Q(lam01=1/50, lam02=1/2475, lam12=1/100, mu10=mu10)   # rates [1/year]
@@ -48,7 +48,7 @@ Usage
 import numpy as np
 from scipy.linalg import expm
 
-from ctmc_pbee import metrics, spectral
+from rcubed import metrics, spectral
 
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 """
-ctmc_pbee.montecarlo
+rcubed.montecarlo
 ====================
 Monte Carlo simulation of the CTMC trajectories, used to verify the closed-form
 reliability and resilience metrics (REC2026 conference paper, Figs. 3-4).
@@ -17,7 +17,7 @@ Q0, conditional     : (time in ds0) / t, surviving trajectories only     -> metr
 
 Usage
 -----
-    from ctmc_pbee import core, montecarlo
+    from rcubed import core, montecarlo
 
     Q  = core.build_Q(lam01=0.02, lam02=1e-4, lam12=5e-3, mu10=0.1)
     mc = montecarlo.run(Q, T_hor=50.0, n_sim=10_000, seed=0)

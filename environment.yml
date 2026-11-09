@@ -1,5 +1,5 @@
 # Versions of the environment used to produce the paper results (conda env "msca").
-name: ctmc-pbee
+name: rcubed
 channels:
   - conda-forge
 dependencies:

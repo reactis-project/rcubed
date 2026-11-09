@@ -1,4 +1,4 @@
-"""ctmc_pbee: CTMC-based Performance-Based Earthquake Engineering.
+"""rcubed: CTMC-based Performance-Based Earthquake Engineering.
 
 Code accompanying Nardin, Marelli, Sudret, Broccardo, "A Generalized Framework
 for Performance-Based Earthquake Engineering: Integrated Assessment of

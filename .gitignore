@@ -38,4 +38,4 @@ tests/
 figures/
 
 # Fragility simulation: used only by the local notebook 00 (fragilities from Nardin et al. 2025)
-src/ctmc_pbee/fragilities.py
+src/rcubed/fragilities.py

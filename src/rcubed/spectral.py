@@ -1,5 +1,5 @@
 """
-ctmc_pbee.spectral
+rcubed.spectral
 ==================
 Spectral analysis of the transient sub-generator Q_T: eigenmode expansion,
 quasi-stationary distribution (QSD) and spectral approximation of the
@@ -25,7 +25,7 @@ Eq. (27)       -> R0_spectral            : spectral approximation  R0 ~ 1 - w0 *
 
 Usage
 -----
-    from ctmc_pbee import core, metrics, spectral
+    from rcubed import core, metrics, spectral
 
     Q_T   = core.extract_Q_T(core.build_Q(lam01=1/50, lam02=1/2475, lam12=1/100, mu10=8.4))
     spec  = spectral.spectral_analysis(Q_T)

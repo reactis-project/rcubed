@@ -1,5 +1,5 @@
 """
-ctmc_pbee.plotting
+rcubed.plotting
 ==================
 Figures of the paper (case study) and plotting helpers.
 """
@@ -10,7 +10,7 @@ import matplotlib.gridspec as gridspec
 from matplotlib.colors import LogNorm, LinearSegmentedColormap, to_rgba
 from matplotlib.patches import Patch
 
-from ctmc_pbee import core
+from rcubed import core
 
 
 
