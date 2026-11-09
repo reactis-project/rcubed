@@ -39,3 +39,7 @@ figures/
 
 # Fragility simulation: used only by the local notebook 00 (fragilities from Nardin et al. 2025)
 src/rcubed/fragilities.py
+
+# Personal drafts (LinkedIn post, GitHub release notes), not part of the repo
+/linkedin.md
+/release.md
