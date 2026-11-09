@@ -26,7 +26,8 @@ import pickle
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm, LinearSegmentedColormap, to_rgba
+from matplotlib.colors import LogNorm, to_rgba
+from matplotlib.legend_handler import HandlerTuple
 from matplotlib.lines import Line2D
 from scipy.linalg import expm
 
@@ -172,64 +173,92 @@ def fig10_state_probabilities(Qsim, hqtile='lambda_0.05', stqtile='p84',
 # ─────────────────────────────────────────────────────────────────────────────
 # Figure 11: reliability vs mu10
 # ─────────────────────────────────────────────────────────────────────────────
+# Recovery-time axis under the left panel: t = 1/mu10 at mu10 = 10^-1 ... 10^3 (rounded labels)
+FIG11_TIME_TICKS = {0.1: '10\n[years]', 1.0: '1\n[year]', 10.0: '1\n[month]',
+                    100.0: '3\n[days]', 1000.0: '8\n[hours]'}
+
+
 def fig11_reliability(Qsim, hqtile='lambda_0.05', stqtile='p50',
-                      mus=None, thors=(1.0, 10, 50.0),
-                      ref_mus_fix=(8.43, 2.10, 0.69), ref_mus_iso=(253, 8.43, 5.05),
-                      mute=False, savefig=True):
-    """Figure 11: failure probability F and reliability index beta vs mu10.
+                      mus=None, thors=(1.0, 10.0, 50.0), savefig=True):
+    """Figure 11: failure probability F_T (left) and reliability index beta (right) vs mu10.
 
-    Seismic rates fixed (long-recovery Q), one curve per time horizon.
-    ``mute=True`` removes tick labels (version used for the paper layout).
+    Seismic rates fixed (long-recovery Q), one curve per structure and time horizon
+    (darker = shorter horizon). Filled markers: median recovery rates of Table 3
+    (Eq. 30, same repair times as Fig. 13).
     """
-    mus = np.logspace(-1, 3, 50) if mus is None else mus
-    thors = np.asarray(thors)
-    Q_fix = Qsim['ita'][hqtile]['fixed'][stqtile]['high']
-    Q_iso = Qsim['ita'][hqtile]['isolated'][stqtile]['high']
+    mus = np.logspace(-1, 3, 50) if mus is None else np.asarray(mus)
+    thors = np.asarray(thors, float)
+    mu_of = lambda days: np.log(2) / (np.asarray(days, float) / 365.0)   # Eq. 30
+    ref_mus = {st: mu_of([d['short'], *d['long']]) for st, d in FIG13_REPAIR_DAYS.items()}
+    Q = {st: Qsim['ita'][hqtile][st][stqtile]['high'] for st in ('fixed', 'isolated')}
 
-    def fading(hex_color):
-        r, g, b, _ = to_rgba(hex_color)
-        return LinearSegmentedColormap.from_list(hex_color, [(r, g, b, 1.0), (r, g, b, 0.4)], N=256)
-
-    normCol = LogNorm(vmin=thors.min(), vmax=thors.max())
-    cmap_iso = fading(STRUCT_COLORS['isolated']['color'])
-    cmap_fix = fading(STRUCT_COLORS['fixed']['color'])
-
-    def F_beta(Q, mu, T):
-        F, _ = metrics.F_tau(core.extract_Q_T(core.set_recovery_rate(Q, mu)), T)
+    def F_beta(Qs, mu, T):
+        F, _ = metrics.F_tau(core.extract_Q_T(core.set_recovery_rate(Qs, mu)), T)
         return F, metrics.beta_index(F)
 
-    fig, (axF, axB) = plt.subplots(1, 2, figsize=(9, 2.5))
-    for T_hor in thors:
-        F_iso, b_iso = zip(*[F_beta(Q_iso, mu, T_hor) for mu in mus])
-        F_fix, b_fix = zip(*[F_beta(Q_fix, mu, T_hor) for mu in mus])
-        c_iso, c_fix = cmap_iso(normCol(T_hor)), cmap_fix(normCol(T_hor))
+    def shade(st, T):
+        # alpha from 1 (shortest horizon) to 0.4 (longest), log-spaced, blended on white
+        a = 1.0 - 0.6 * LogNorm(vmin=thors.min(), vmax=thors.max())(T)
+        r, g, b, _ = to_rgba(STRUCT_COLORS[st]['color'])
+        return (1 - a + a * r, 1 - a + a * g, 1 - a + a * b)
 
-        axB.semilogx(mus, b_iso, color=c_iso, linestyle='-')
-        axB.semilogx(mus, b_fix, color=c_fix, linestyle='-')
-        axF.semilogx(mus, F_iso, color=c_iso, linestyle='-')
-        axF.semilogx(mus, F_fix, color=c_fix, linestyle='-')
+    rc = {"font.family": "serif", "mathtext.fontset": "cm", "font.size": 11,
+          "axes.titlesize": 11, "xtick.labelsize": 10, "ytick.labelsize": 10}
+    with plt.rc_context(rc):
+        fig, (axF, axB) = plt.subplots(1, 2, figsize=(10, 2.6))
+        fig.subplots_adjust(wspace=0.18)
+        legend_handles = []
+        for T_hor in thors:
+            pair = []
+            for st in ('fixed', 'isolated'):
+                c = shade(st, T_hor)
+                F, b = np.array([F_beta(Q[st], mu, T_hor) for mu in mus]).T
+                axF.semilogx(mus, F, color=c, lw=1.6)
+                axB.semilogx(mus, b, color=c, lw=1.6)
+                Fr, br = np.array([F_beta(Q[st], mu, T_hor) for mu in ref_mus[st]]).T
+                axF.plot(ref_mus[st], Fr, 'o', color=c, ms=4.5, zorder=5)
+                axB.plot(ref_mus[st], br, 'o', color=c, ms=4.5, zorder=5)
+                pair.append(Line2D([], [], color=c, lw=4, marker='o', ms=8))
+            legend_handles.append(tuple(pair))
 
-        for mu in ref_mus_iso:
-            F, b = F_beta(Q_iso, mu, T_hor)
-            axB.plot(mu, b, 'o', color=c_iso, markersize=4)
-            axF.plot(mu, F, 'o', color=c_iso, markersize=4)
-        for mu in ref_mus_fix:
-            F, b = F_beta(Q_fix, mu, T_hor)
-            axB.plot(mu, b, 'o', color=c_fix, markersize=4)
-            axF.plot(mu, F, 'o', color=c_fix, markersize=4)
-
-    axF.grid(True, which="both", ls="--", alpha=0.5)
-    axB.grid(True, which="both", ls="--", alpha=0.5)
-    axB.set_ylim([0, 3.5])
-    if mute:
+        span = r'with $\mathrm{T_{hor}} \in [%s]$ [years]' % ', '.join(f'{t:g}' for t in thors)
+        axF.set_title(r'$\mathcal{F}_{\mathcal{T}}\,(\mu_{10})$  ' + span)
+        axB.set_title(r'$\beta\,(\mu_{10})$  ' + span)
+        axF.set_ylabel(r'$\mathcal{F}_{\mathcal{T}}(\cdot)$ [-]')
+        axB.set_ylabel(r'$\beta = -\Phi^{-1}(\mathcal{F}_{\mathcal{T}})$')
+        axF.set_ylim(bottom=-0.01)
+        axB.set_ylim(0, 3.5)
+        axB.set_yticks([1, 2, 3])
         for ax in (axF, axB):
-            ax.set_xticklabels([])
-            ax.set_yticklabels([])
-    plt.tight_layout()
-    plt.box(True)
-    plt.tight_layout()
-    _save(("mIC" if mute else "IC") + "-ftau-beta-function-mu10.svg", fig, savefig)
-    plt.show()
+            ax.set_xlim(mus.min() / 1.3, mus.max() * 1.3)
+            ax.grid(True, which='both', ls='--', alpha=0.5)
+            # mu axis: arrow with label below the tick labels
+            ax.annotate('', xy=(1.0, -0.2), xytext=(0.0, -0.2), xycoords='axes fraction',
+                        arrowprops=dict(arrowstyle='->', lw=0.9), annotation_clip=False)
+            ax.text(0.5, -0.23, r'$\mu$ - recovery rates [year$^{-1}$]', transform=ax.transAxes,
+                    ha='center', va='top')
+
+        # recovery-time axis (reversed arrow) under the left panel
+        axT = axF.secondary_xaxis(-0.52)
+        axT.set_xticks(list(FIG11_TIME_TICKS), list(FIG11_TIME_TICKS.values()))
+        axT.minorticks_off()
+        axT.tick_params(direction='in', length=4)
+        axT.spines['bottom'].set_visible(False)
+        axF.annotate('', xy=(0.0, -0.52), xytext=(1.0, -0.52), xycoords='axes fraction',
+                     arrowprops=dict(arrowstyle='->', lw=0.9), annotation_clip=False)
+        axF.text(0.5, -0.44, r'$t$ - recovery times', transform=axF.transAxes,
+                 ha='center', va='center')
+
+        # legend under the right panel: one BF/BI pair per time horizon
+        axB.legend(legend_handles, [rf'$\mathrm{{T_{{hor}}}}$ = {t:g} yr'
+                                    for t in thors],
+                   handler_map={tuple: HandlerTuple(ndivide=None, pad=0)},
+                   handlelength=2.6, ncol=len(thors), loc='upper center',
+                   bbox_to_anchor=(0.5, -0.38), frameon=False, fontsize=10, columnspacing=1.2,
+                   handletextpad=0.5)
+
+        _save("IC-ftau-beta-function-mu10.svg", fig, savefig)
+        plt.show()
     return fig, (axF, axB)
 
 
