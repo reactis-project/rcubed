@@ -72,3 +72,15 @@ See also `CITATION.cff`.
 ## License
 
 MIT, see `LICENSE`.
+
+## Funding
+
+<img src="docs/eu-emblem.png" height="40" alt="Funded by the European Union">
+
+rcubed is developed within the project **REACTIS**, which has received funding from the
+European Union's Horizon Europe research and innovation programme under the
+Marie Skłodowska-Curie Global Postdoctoral Fellowship, grant agreement No. 101147351.
+
+Views and opinions expressed are however those of the author(s) only and do not necessarily
+reflect those of the European Union or the European Research Executive Agency (REA).
+Neither the European Union nor the granting authority can be held responsible for them.
