@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/1445533328.svg)](https://doi.org/10.5281/zenodo.24087893)
+
 <p align="center">
   <img src="docs/rcubed3-logo.png" width="300"
        alt="rcubed: reliability, resilience, recovery">
